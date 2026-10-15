@@ -20,6 +20,8 @@ test('every card gives the visitor an explicit email handoff', () => {
   const services = html.match(/<section class="services"[\s\S]*?<\/section>/)[0];
   assert.equal((services.match(/href="mailto:atlas\.abstergo@gmail\.com/g) || []).length, 4);
   assert.match(html, /assets\/abstergo-icon-white\.png/);
+  assert.match(html, /class="planet-ring"/);
+  assert.match(css, /\.planet-ring\{[^}]*border-radius:50%/);
   assert.match(html, /class="planet-mark" src="assets\/abstergo-logo-white\.png"/);
   assert.match(css, /\.planet-mark\{[^}]*mix-blend-mode:screen/);
 });
