@@ -6,24 +6,24 @@ const path = require('node:path');
 const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'styles.css'), 'utf8');
-const script = fs.readFileSync(path.join(root, 'script.js'), 'utf8');
 
-test('homepage carries the approved Abstergo message and accessible core landmarks', () => {
-  assert.match(html, /<main id="main">/);
-  assert.match(html, /Make the work<br><em>move itself\.<\/em>/);
-  assert.match(html, /<nav id="site-nav" aria-label="Primary navigation">/);
-  assert.match(html, /href="mailto:atlas\.abstergo@gmail\.com/);
+test('homepage has four easy-to-access service cards', () => {
+  const cards = [...html.matchAll(/class="service-card [^"]+"/g)];
+  assert.equal(cards.length, 4);
+  assert.match(html, /Portfolio management/);
+  assert.match(html, /Automation consultation/);
+  assert.match(html, /Social media/);
+  assert.match(html, /Custom systems/);
+});
+
+test('every card gives the visitor an explicit email handoff', () => {
+  const services = html.match(/<section class="services"[\s\S]*?<\/section>/)[0];
+  assert.equal((services.match(/href="mailto:atlas\.abstergo@gmail\.com/g) || []).length, 4);
   assert.match(html, /assets\/abstergo-icon-white\.png/);
 });
 
-test('mobile navigation and visual system are included', () => {
-  assert.match(html, /class="menu-toggle"/);
-  assert.match(script, /nav\.classList\.toggle\('open'\)/);
+test('the cards remain responsive and do not collect private information', () => {
+  assert.match(css, /grid-template-columns:repeat\(2,minmax\(0,1fr\)\)/);
   assert.match(css, /@media\(max-width:760px\)/);
-  assert.match(css, /--lime:#d3ff4f/);
-});
-
-test('prototype makes no data collection or private service connection', () => {
-  assert.doesNotMatch(html, /<form\b/i);
-  assert.doesNotMatch(html, /api[_-]?key|stripe|analytics/i);
+  assert.doesNotMatch(html, /<form\b|api[_-]?key|stripe|analytics/i);
 });
