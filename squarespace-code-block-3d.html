@@ -1170,10 +1170,12 @@
   (function initAbstergo3DSaturn() {
     // === 3D SATURN CONFIGURATION ===
     const CONFIG = {
-      // Primary hosted GLB file on Squarespace
-      modelUrl: 'https://www.abstergollc.org/s/Saturn_1_120536.glb',
+      // Primary hosted GLB file on jsDelivr CDN (with global edge caching and open CORS)
+      modelUrl: 'https://cdn.jsdelivr.net/gh/1nnovat1on/abstergo-homepage-ui@master/saturn3D.glb',
+      // Direct GitHub Raw backup URL
+      rawBackupUrl: 'https://raw.githubusercontent.com/1nnovat1on/abstergo-homepage-ui/master/saturn3D.glb',
       // Fallback URL for local preview
-      localUrl: 'Saturn_1_120536.glb',
+      localUrl: 'saturn3D.glb',
       // Continuous axial rotation speed (radians/sec)
       rotationSpeed: 0.08,
       // Axial tilt angle (degrees, matches original Abstergo angle)
@@ -1287,11 +1289,14 @@
       renderer.render(scene, camera);
     }
 
-    // Try primary URL first, fall back to local URL if offline
+    // Try jsDelivr CDN first, then GitHub Raw, then local fallback
     loader.load(CONFIG.modelUrl, setupModel, undefined, function () {
-      console.info('Loading primary model URL failed, attempting local fallback...');
-      loader.load(CONFIG.localUrl, setupModel, undefined, function (err) {
-        console.warn('3D Saturn model could not be loaded; CSS fallback remains active.', err);
+      console.info('Loading CDN model URL failed, attempting GitHub Raw backup...');
+      loader.load(CONFIG.rawBackupUrl, setupModel, undefined, function () {
+        console.info('Loading GitHub Raw failed, attempting local fallback...');
+        loader.load(CONFIG.localUrl, setupModel, undefined, function (err) {
+          console.warn('3D Saturn model could not be loaded; CSS fallback remains active.', err);
+        });
       });
     });
 
